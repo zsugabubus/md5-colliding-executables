@@ -11,7 +11,7 @@ sed "s-{{PROGRAMS}}-$PROGRAMS-; s/{{BLOCK_COUNT}}/$BLOCK_COUNT/" body.sh > out/b
 
 # Derive a binary value from last block.
 D() {
-  [[ $(tail -c128 "$1" | sha1sum | cut -c1) =~ [0-7] ]]
+  [[ $(tail -c128 "$1" | md5sum | cut -c1) =~ [0-7] ]]
   echo $?
 }
 
