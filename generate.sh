@@ -6,7 +6,14 @@ mkdir -p out bin
 PROGRAMS=$(for f in $(find programs/ -type f); do
   echo -n "$(base64 -w0 "$f") ";
 done)
-BLOCK_COUNT=$(bc -l <<< "scale=4;n=l(4)/l(2)+0.0001;scale=0;n/1")
+PROGRAM_COUNT=$(find programs/ -type f | wc -l)
+BLOCK_COUNT=$(bc -l <<EOF
+scale=0
+n=0
+for (c=$PROGRAM_COUNT;c>0;c/=2) { n+=1; }
+n
+EOF
+)
 sed "s-{{PROGRAMS}}-$PROGRAMS-; s/{{BLOCK_COUNT}}/$BLOCK_COUNT/" body.sh > out/base
 
 # Derive a binary value from last block.
@@ -47,7 +54,7 @@ for i in $(seq $BLOCK_COUNT); do
 done
 
 # build executable files from generated blocks
-for program_idx in $(seq 0 $(($(find programs/ -type f | wc -l) - 1)) ); do
+for program_idx in $(seq 0 $(($PROGRAM_COUNT - 1)) ); do
   blocks=_$(printf "%${BLOCK_COUNT}d\n" $(bc <<<"obase=2;$program_idx") | tr \  0)
   cat out/body$(
     for block_idx in $(seq $BLOCK_COUNT); do
