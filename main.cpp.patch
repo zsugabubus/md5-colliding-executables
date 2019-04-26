@@ -1,0 +1,6 @@
+176,177c176,177
+< 				while ( fs::exists(fs::path(outfn1, fs::native)) 
+< 					 || fs::exists(fs::path(outfn2, fs::native)))
+---
+> 				while ( fs::exists(outfn1)
+> 					 || fs::exists(outfn2))
